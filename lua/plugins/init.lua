@@ -2,13 +2,36 @@
 -- You can add more plugins here or create separate files in this directory
 
 return {
-	-- Example: colorscheme
+	-- Gruvbox colorscheme
 	{
-		"folke/tokyonight.nvim",
+		"ellisonleao/gruvbox.nvim",
 		lazy = false,
 		priority = 1000,
 		config = function()
-			-- vim.cmd([[colorscheme tokyonight]])
+			require("gruvbox").setup({
+				undercurl = true,
+				underline = true,
+				bold = true,
+				italic = {
+					strings = true,
+					emphasis = true,
+					comments = true,
+					operators = false,
+					folds = true,
+				},
+				strikethrough = true,
+				invert_selection = false,
+				invert_signs = false,
+				invert_tabline = false,
+				invert_intend_guides = false,
+				inverse = true,
+				contrast = "", -- can be "hard", "soft" or empty string
+				palette_overrides = {},
+				overrides = {},
+				dim_inactive = false,
+				transparent_mode = false,
+			})
+			vim.cmd([[colorscheme gruvbox]])
 		end,
 	},
 
@@ -38,6 +61,15 @@ return {
 		opts = {}
 	},
 
+	-- Mason LSP config for automatic server setup
+	{
+		"williamboman/mason-lspconfig.nvim",
+		opts = {
+			ensure_installed = { "omnisharp" },
+			automatic_installation = true,
+		}
+	},
+
 	-- LSP configuration
 	{
 		"neovim/nvim-lspconfig",
@@ -49,6 +81,12 @@ return {
 		config = function()
 			local lspconfig = require("lspconfig")
 			local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+			-- Configure C# language server (omnisharp)
+			lspconfig.omnisharp.setup({
+				capabilities = capabilities,
+				cmd = { "omnisharp", "--languageserver", "--hostPID", tostring(vim.fn.getpid()) },
+			})
 
 			-- LSP keymaps
 			vim.api.nvim_create_autocmd("LspAttach", {
