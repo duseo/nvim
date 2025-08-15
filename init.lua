@@ -32,6 +32,9 @@ vim.opt.softtabstop = 4     -- Number of spaces inserted when pressing <Tab>.
 vim.opt.shiftwidth = 4      -- Number of spaces to use for auto-indent.
 vim.opt.expandtab = true    -- Use spaces instead of tabs.
 
+-- Keymaps
+vim.keymap.set('n', '<leader>nv', ':e ~/.config/nvim<CR>', { desc = 'Open nvim config dir' })
+
 -- =============================================================================
 -- 3. LAZY.NVIM SETUP 
 -- =============================================================================
