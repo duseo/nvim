@@ -61,49 +61,52 @@ return {
     {
         "williamboman/mason-lspconfig.nvim",
         opts = {
-            ensure_installed = { "omnisharp" },
+            ensure_installed = { "csharp_ls" },
             automatic_installation = true,
-        }
-    },
-
-    -- LSP configuration
-    {
-        "neovim/nvim-lspconfig",
-        dependencies = {
-            "williamboman/mason.nvim",
-            "williamboman/mason-lspconfig.nvim",
-            "hrsh7th/cmp-nvim-lsp",
-        },
-        config = function()
-            local lspconfig = require("lspconfig")
-            local capabilities = require("cmp_nvim_lsp").default_capabilities()
-
-            -- Configure C# language server (omnisharp)
-            lspconfig.omnisharp.setup({
-                capabilities = capabilities,
-                cmd = { "omnisharp", "--languageserver", "--hostPID", tostring(vim.fn.getpid()) },
-            })
-
-            -- LSP keymaps
-            vim.api.nvim_create_autocmd("LspAttach", {
-                group = vim.api.nvim_create_augroup("UserLspConfig", {}),
-                callback = function(ev)
-                    local opts = { buffer = ev.buf }
-                    vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
-                    vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-                    vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-                    vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
-                    vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts)
-                    vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
-                    vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts)
-                    vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
-                    vim.keymap.set("n", "<leader>f", function()
-                        vim.lsp.buf.format { async = true }
-                    end, opts)
+            --- THIS IS THE FIX ---
+            handlers = {
+                -- The first handler is a default setup for all other servers
+                function(server_name)
+                    require("lspconfig")[server_name].setup({
+                        capabilities = require("cmp_nvim_lsp").default_capabilities(),
+                    })
                 end,
-            })
-        end,
+
+                -- The second handler is a specific override ONLY for csharp_ls
+                ["csharp_ls"] = function()
+                    require("lspconfig").csharp_ls.setup({
+                        capabilities = require("cmp_nvim_lsp").default_capabilities(),
+                        root_dir = require("lspconfig.util").root_pattern("*.sln", ".git"),
+                    })
+                end,
+            },
+        },
     },
+
+    {
+    "neovim/nvim-lspconfig",
+    dependencies = {
+        "williamboman/mason.nvim",
+        "williamboman/mason-lspconfig.nvim",
+        "hrsh7th/cmp-nvim-lsp",
+    },
+    config = function()
+        -- DO NOT call lspconfig.csharp_ls.setup{} here anymore.
+        -- This section is now only for general settings, like keymaps.
+        
+        -- LSP keymaps
+        vim.api.nvim_create_autocmd("LspAttach", {
+            group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+            callback = function(ev)
+                local opts = { buffer = ev.buf }
+                -- Your vim.keymap.set calls go here...
+                vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+                vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+                -- etc.
+            end,
+        })
+    end,
+},
 
     -- Completion
     {
