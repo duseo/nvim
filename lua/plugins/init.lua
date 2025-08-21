@@ -180,6 +180,16 @@ return {
         end,
     },
 
+    -- Surround plugin for surrounding text
+    {
+        "kylechui/nvim-surround",
+        version = "*",
+        event = "VeryLazy",
+        config = function()
+            require("nvim-surround").setup()
+        end
+    },
+
     -- Database plugins
     "tpope/vim-dadbod",
     "kristijanhusak/vim-dadbod-ui",
