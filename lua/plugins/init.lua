@@ -61,9 +61,8 @@ return {
     {
         "williamboman/mason-lspconfig.nvim",
         opts = {
-            ensure_installed = { "csharp_ls" },
+            ensure_installed = {},
             automatic_installation = true,
-            --- THIS IS THE FIX ---
             handlers = {
                 -- The first handler is a default setup for all other servers
                 function(server_name)
@@ -71,42 +70,51 @@ return {
                         capabilities = require("cmp_nvim_lsp").default_capabilities(),
                     })
                 end,
-
-                -- The second handler is a specific override ONLY for csharp_ls
-                ["csharp_ls"] = function()
-                    require("lspconfig").csharp_ls.setup({
-                        capabilities = require("cmp_nvim_lsp").default_capabilities(),
-                        root_dir = require("lspconfig.util").root_pattern("*.sln", ".git"),
-                    })
-                end,
             },
         },
     },
 
+    -- Roslyn.nvim for C# development
     {
-    "neovim/nvim-lspconfig",
-    dependencies = {
-        "williamboman/mason.nvim",
-        "williamboman/mason-lspconfig.nvim",
-        "hrsh7th/cmp-nvim-lsp",
+        "seblyng/roslyn.nvim",
+        ft = "cs",
+        dependencies = {
+            "hrsh7th/cmp-nvim-lsp",
+        },
+        config = function()
+            require("roslyn").setup({
+                config = {
+                    capabilities = require("cmp_nvim_lsp").default_capabilities(),
+                },
+            })
+        end,
     },
-    config = function()
-        -- DO NOT call lspconfig.csharp_ls.setup{} here anymore.
-        -- This section is now only for general settings, like keymaps.
-        
-        -- LSP keymaps
-        vim.api.nvim_create_autocmd("LspAttach", {
-            group = vim.api.nvim_create_augroup("UserLspConfig", {}),
-            callback = function(ev)
-                local opts = { buffer = ev.buf }
-                -- Your vim.keymap.set calls go here...
-                vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-                vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-                -- etc.
-            end,
-        })
-    end,
-},
+
+    {
+        "neovim/nvim-lspconfig",
+        dependencies = {
+            "williamboman/mason.nvim",
+            "williamboman/mason-lspconfig.nvim",
+            "hrsh7th/cmp-nvim-lsp",
+        },
+        config = function()
+            -- LSP keymaps
+            vim.api.nvim_create_autocmd("LspAttach", {
+                group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+                callback = function(ev)
+                    local opts = { buffer = ev.buf }
+                    vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+                    vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+                    vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+                    vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+                    vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
+                    vim.keymap.set("n", "<leader>f", function()
+                        vim.lsp.buf.format({ async = true })
+                    end, opts)
+                end,
+            })
+        end,
+    },
 
     -- Completion
     {
