@@ -41,6 +41,18 @@ return {
         tag = '0.1.8',
         dependencies = { 'nvim-lua/plenary.nvim' },
         config = function()
+            require('telescope').setup({
+                defaults = {
+                    file_ignore_patterns = {
+                        "bin/",
+                        "obj/",
+                        "%.dll",
+                        "%.exe",
+                        "%.pdb",
+                    }
+                }
+            })
+            
             local builtin = require('telescope.builtin')
             vim.keymap.set('n', '<leader>ff', builtin.find_files, 
                 { desc = 'Telescope find files'} )
@@ -206,44 +218,38 @@ return {
         end
     },
 
-    -- REST client for API testing
+    -- HTTP client for API testing
     {
-        "rest-nvim/rest.nvim",
+        "mistweaverco/kulala.nvim",
         ft = "http",
-        dependencies = { "nvim-lua/plenary.nvim" },
         config = function()
-            require("rest-nvim").setup({
-                result_split_horizontal = false,
-                result_split_in_place = false,
-                stay_in_current_window_after_split = true,
-                skip_ssl_verification = false,
-                encode_url = true,
-                highlight = {
-                    enabled = true,
-                    timeout = 150,
-                },
-                result = {
-                    show_url = true,
-                    show_curl_command = false,
-                    show_http_info = true,
-                    show_headers = true,
-                    show_statistics = false,
-                    formatters = {
-                        json = "jq",
-                        html = function(body)
-                            return vim.fn.system({"tidy", "-i", "-q", "-"}, body)
-                        end
+            require("kulala").setup({
+                winbar = true,
+                default_view = "body",
+                debug = false,
+                contenttypes = {
+                    ["application/json"] = {
+                        ft = "json",
+                        formatter = { "jq", "." },
+                        pathresolver = { "jq", "-r", "paths as $p | $p | join(\".\")" }
                     },
+                    ["application/xml"] = {
+                        ft = "xml",
+                        formatter = { "xmllint", "--format", "-" }
+                    },
+                    ["text/html"] = {
+                        ft = "html",
+                        formatter = { "tidy", "-i", "-q", "-" }
+                    }
                 },
-                jump_to_request = false,
-                env_file = '.env',
-                custom_dynamic_variables = {},
-                yank_dry_run = true,
             })
 
-            -- Keymaps for rest.nvim
-            vim.keymap.set("n", "<leader>rr", "<cmd>Rest run<cr>", { desc = "Run request under the cursor" })
-            vim.keymap.set("n", "<leader>rl", "<cmd>Rest run last<cr>", { desc = "Re-run latest request" })
+            -- Keymaps for kulala.nvim
+            vim.keymap.set("n", "<leader>rr", function() require("kulala").run() end, { desc = "Run request under the cursor" })
+            vim.keymap.set("n", "<leader>rl", function() require("kulala").run() end, { desc = "Run request under the cursor" })
+            vim.keymap.set("n", "<leader>rt", function() require("kulala").toggle_view() end, { desc = "Toggle between body and headers view" })
+            vim.keymap.set("n", "<leader>rp", function() require("kulala").jump_prev() end, { desc = "Jump to previous request" })
+            vim.keymap.set("n", "<leader>rn", function() require("kulala").jump_next() end, { desc = "Jump to next request" })
         end
     },
 
