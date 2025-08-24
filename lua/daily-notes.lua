@@ -143,22 +143,47 @@ function M.generate_tag_report(tag)
     -- Sort entries by date
     table.sort(report_entries, function(a, b) return a.date < b.date end)
     
+    -- Group entries by date
+    local grouped_entries = {}
+    for _, entry in ipairs(report_entries) do
+        if not grouped_entries[entry.date] then
+            grouped_entries[entry.date] = {}
+        end
+        table.insert(grouped_entries[entry.date], entry.content)
+    end
+    
+    -- Get sorted unique dates
+    local unique_dates = {}
+    for date, _ in pairs(grouped_entries) do
+        table.insert(unique_dates, date)
+    end
+    table.sort(unique_dates)
+    
+    -- Create consolidated date range for the headline
+    local date_info = ''
+    if #unique_dates == 1 then
+        date_info = ' (' .. unique_dates[1] .. ')'
+    elseif #unique_dates > 1 then
+        date_info = ' (' .. unique_dates[1] .. ' to ' .. unique_dates[#unique_dates] .. ')'
+    end
+    
     -- Create new buffer for report
     vim.cmd('new')
     local buf = vim.api.nvim_get_current_buf()
     
-    local report_lines = {'# ' .. tag:upper() .. ' Report', '', ''}
+    local report_lines = {'# ' .. tag:upper() .. ' Report' .. date_info, '', ''}
     
-    for _, entry in ipairs(report_entries) do
-        table.insert(report_lines, '## ' .. entry.date)
+    for _, date in ipairs(unique_dates) do
+        table.insert(report_lines, '## ' .. date)
         table.insert(report_lines, '')
         
-        -- Add the section content
-        for _, content_line in ipairs(entry.content) do
-            table.insert(report_lines, content_line)
+        -- Add all entries for this date
+        for _, content in ipairs(grouped_entries[date]) do
+            for _, content_line in ipairs(content) do
+                table.insert(report_lines, content_line)
+            end
+            table.insert(report_lines, '')
         end
-        
-        table.insert(report_lines, '')
     end
     
     vim.api.nvim_buf_set_lines(buf, 0, -1, false, report_lines)
