@@ -52,10 +52,10 @@ return {
                     }
                 }
             })
-            
+
             local builtin = require('telescope.builtin')
-            vim.keymap.set('n', '<leader>ff', builtin.find_files, 
-                { desc = 'Telescope find files'} )
+            vim.keymap.set('n', '<leader>ff', builtin.find_files,
+                { desc = 'Telescope find files' })
             vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'Telescope live grep' })
             vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'Telescope buffers' })
             vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Telescope help tags' })
@@ -78,7 +78,7 @@ return {
     {
         "williamboman/mason-lspconfig.nvim",
         opts = {
-            ensure_installed = {"roslyn"},
+            ensure_installed = {},
             automatic_installation = true,
             handlers = {
                 -- The first handler is a default setup for all other servers
@@ -181,9 +181,9 @@ return {
         end,
     },
     {
-          "karb94/neoscroll.nvim",
-          opts = {
-        easing = 'linear' },
+        "karb94/neoscroll.nvim",
+        opts = {
+            easing = 'linear' },
     },
 
     -- Harpoon for quick file navigation
@@ -245,12 +245,29 @@ return {
             })
 
             -- Keymaps for kulala.nvim
-            vim.keymap.set("n", "<leader>rr", function() require("kulala").run() end, { desc = "Run request under the cursor" })
-            vim.keymap.set("n", "<leader>rl", function() require("kulala").run() end, { desc = "Run request under the cursor" })
-            vim.keymap.set("n", "<leader>rt", function() require("kulala").toggle_view() end, { desc = "Toggle between body and headers view" })
-            vim.keymap.set("n", "<leader>rp", function() require("kulala").jump_prev() end, { desc = "Jump to previous request" })
-            vim.keymap.set("n", "<leader>rn", function() require("kulala").jump_next() end, { desc = "Jump to next request" })
+            vim.keymap.set("n", "<leader>rr", function() require("kulala").run() end,
+                { desc = "Run request under the cursor" })
+            vim.keymap.set("n", "<leader>rl", function() require("kulala").run() end,
+                { desc = "Run request under the cursor" })
+            vim.keymap.set("n", "<leader>rt", function() require("kulala").toggle_view() end,
+                { desc = "Toggle between body and headers view" })
+            vim.keymap.set("n", "<leader>rp", function() require("kulala").jump_prev() end,
+                { desc = "Jump to previous request" })
+            vim.keymap.set("n", "<leader>rn", function() require("kulala").jump_next() end,
+                { desc = "Jump to next request" })
         end
+    },
+
+    {
+        'stevearc/oil.nvim',
+        ---@module 'oil'
+        ---@type oil.SetupOpts
+        opts = {},
+        -- Optional dependencies
+        dependencies = { { "echasnovski/mini.icons", opts = {} } },
+        -- dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if you prefer nvim-web-devicons
+        -- Lazy loading is not recommended because it is very tricky to make it work correctly in all situations.
+        lazy = false,
     },
 
     -- Database plugins
