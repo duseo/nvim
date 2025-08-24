@@ -36,6 +36,9 @@ vim.opt.expandtab = true    -- Use spaces instead of tabs.
 vim.keymap.set('n', '<leader>nv', ':e ~/.config/nvim<CR>', { desc = 'Open nvim config dir' })
 vim.keymap.set('n', '-', '<cmd>Oil<CR>')
 
+-- Daily Notes System
+require('daily-notes').setup()
+
 -- =============================================================================
 -- 3. LAZY.NVIM SETUP 
 -- =============================================================================
