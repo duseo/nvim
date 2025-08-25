@@ -26,23 +26,8 @@ function M.open_daily_note()
         local lines = {
             '# ' .. date,
             '',
-            '## Morning Standup #standup',
+            '## Headline #tag',
             '- ',
-            '',
-            '## Client Meetings #meetings',
-            '- ',
-            '',
-            '## Project Alpha Work #project-alpha',
-            '- ',
-            '',
-            '## Urgent Issues #urgent',
-            '- ',
-            '',
-            '## General Tasks',
-            '- [ ] ',
-            '- [ ] ',
-            '',
-            '## Notes',
             ''
         }
         vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)

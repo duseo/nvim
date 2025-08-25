@@ -269,6 +269,19 @@ return {
         -- Lazy loading is not recommended because it is very tricky to make it work correctly in all situations.
         lazy = false,
     },
+    {
+        "OXY2DEV/markview.nvim",
+        lazy = false,
+
+        -- For `nvim-treesitter` users.
+        priority = 49,
+
+        -- For blink.cmp's completion
+        -- source
+        -- dependencies = {
+        --     "saghen/blink.cmp"
+        -- },
+    },
 
     -- Database plugins
     "tpope/vim-dadbod",
